@@ -9,11 +9,12 @@
         "root_folder": "public",
         "scrapper_options": {
             "directory": "public",
-            "clean_destination_folder": false,
+            "clean_destination_folder": true,
             "urls": [
-                "https://demo.vuestorefront.io"
+                "https://www.hallmark.com",
+                "https://www.hallmark.com/baptism-and-christening/"
             ],
-            "headless": false,
+            "headless": true,
             "recursive": true,
             "concorrent_runners": 2,
             "max_hiperlink_depth": 1,
@@ -21,15 +22,14 @@
             "ignoreErrors": true
         },
         "processors": [
-            "file-dom_hyperlink-anchor-processor",
-            "file-dom_hyperlink-assets-processor",
-            "file-dom-regex-processor",
-            "file-css-regex-processor"
+            "file-dom-hyperlink-anchor-processor",
+            "file-dom-hyperlink-assets-processor"
+
         ]
     },
-    "proxy": {
+    "proxy":[ {
         "common": {
-            "target_url": "https://www.etos.nl",
+            "target_url": "https://www.hallmark.com",
             "br_base_url": "http://local:8080",
             "service_url": "http://local:8080/site/rest/page/url",
             "host": "local",
@@ -38,7 +38,6 @@
             "site_root_path": "",
             "slash_ending_urls": true,
             "root_urls":[
-                "/on"
             ],
             "br_static_container": {
                 "uuid": "00000000-0000-0000-0000-000000000000",
@@ -69,6 +68,7 @@
             "br_rel_url": "/site/external",
             "prepend": "/site",
             "processors": [
+                "text-script-remove-regex-processor",
                 "text-dom-hyperlink-anchor-processor",
                 "text-aggregator-processor"
             ]
@@ -81,11 +81,74 @@
             "br_rel_url": "/site/_cmsinternal/external",
             "prepend": "/site/_cmsinternal",
             "processors": [
+                "text-script-remove-regex-processor",
                 "text-dom-hyperlink-anchor-processor",
                 "text-aggregator-processor"
             ]
         }
     },
+    {
+        "common": {
+            "target_url": "https://www.etos.nl",
+            "br_base_url": "http://local:8080",
+            "service_url": "http://local:8080/site/rest/page/url",
+            "host": "local",
+            "br_mount_alias": "external2",
+            "br_mount_path": "/external2",
+            "site_root_path": "",
+            "slash_ending_urls": true,
+            "root_urls":[
+                "/on"
+            ],
+            "br_static_container": {
+                "uuid": "00000000-0000-0000-0000-000000000000",
+                "containers": [
+                    {
+                        "name": "main",
+                        "selector": "main",
+                        "mode": "inside"
+                    }
+                ]
+            },
+            "br_hybrid_container": {
+                "uuid": "00000000-0000-0000-0000-000000000000",
+                "containers": [
+                    {
+                        "name": "main",
+                        "selector": "main",
+                        "mode": "inside"
+                    }
+                ]
+            }
+        },
+        "live": {
+            "config_id": "liveSite",
+            "node_port": 3000,
+            "log_level": "debug",
+            "br_site_url": "http://local:8080/site",
+            "br_rel_url": "/site/external2",
+            "prepend": "/site",
+            "processors": [
+                "text-script-remove-regex-processor",
+                "text-dom-hyperlink-anchor-processor",
+                "text-aggregator-processor"
+            ]
+        },
+        "preview": {
+            "config_id": "previewSite",
+            "node_port": 3001,
+            "log_level": "error",
+            "br_site_url": "http://local:8080/site/_cmsinternal",
+            "br_rel_url": "/site/_cmsinternal/external2",
+            "prepend": "/site/_cmsinternal",
+            "processors": [
+                "text-script-remove-regex-processor",
+                "text-dom-hyperlink-anchor-processor",
+                "text-aggregator-processor"
+            ]
+        }
+    }]
+    ,
     "processors": [
         {
             "name": "text-aggregator-processor",
@@ -136,8 +199,8 @@
                     "attributes": [
                         "href"
                     ],
-                    "make_url_relative": false,
-                    "exclude_expression": "^http|^\/\/|^#|^javascript|^mailto"
+                    "make_url_relative": true,
+                    "exclude_expression": "^\/\/|^#|^javascript|^mailto"
                 }
             ]
         },
@@ -323,7 +386,7 @@
             ],
             "regex_remove": [
                 {
-                    "regex": "(?!(<!-- Salesforce Snippet E -CK -->)\\r*\\n*\\t* *)(<script\\b[^>]*>([\\s\\S]*?)<\\/script>)(?=\\r*\\n*\\t* *<!-- Snap Pixel Code E -->)",
+                    "regex": "document.location.protocol",
                     "group": 0
                 }
             ]

@@ -43,7 +43,7 @@ exports.getContainerMarkup = async function (config, relPath, search, container,
         relPath = relPath.substring(0, relPath.length - 1);
     }
     var containerURL = config.br_site_url + config.br_mount_path + relPath + "./" + container.name + searchParams;
-     console.log("container: " + containerURL)
+    //console.log("container: " + containerURL)
     var result = await retrieveText(containerURL, cookies);
     return result;
 }

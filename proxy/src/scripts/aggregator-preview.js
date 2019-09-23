@@ -7,12 +7,22 @@ const helpers = require('../utils/helpers.js');
 const cache = require('../utils/cache.js');
 const textProcessor = require('../processors/text-processor.js');
 var url = require('url');
+// var https = require('https')
+// var fs = require('fs')
 // const NodeCache = require("node-cache");
 // const myCache = new NodeCache({ stdTTL: 100, checkperiod: 120 });
+// httpsOpts = {
+//     key: fs.readFileSync('key.pem_', 'utf8'),
+//     cert: fs.readFileSync('cert.pem_', 'utf8')
+// };
+
+var live_app = express();
 
 const appConfig = require('../config.json');
-const proxyConfig = appConfig.proxy.preview;
-var commonProxyConfig = appConfig.proxy.common;
+appConfig.proxy.forEach(proxySite => {
+
+const proxyConfig = proxySite.preview;
+var commonProxyConfig = proxySite.common;
 var fullConfig = { ...commonProxyConfig, ...proxyConfig };
 
 const onProxyRes = function (proxyRes, req, res) {
@@ -53,6 +63,11 @@ const onProxyRes = function (proxyRes, req, res) {
         //console.log( "transformed body" + await textProcessor.transform(appConfig, config, body, proxyRes, req, res));
         //console.log(body)
         res.setHeader('content-length', result.data.length);
+        
+        console.log("location: " + res.getHeader('location'));
+        //res.removeHeader('location');
+
+        res.removeHeader('link');
         //to check
         if (result.encoding) {
             res.setHeader('content-encoding', result.encoding);
@@ -88,14 +103,14 @@ var options = {
             path = path.replace("?org.hippoecm.hst.container.render_host=" + fullConfig.host, '/');
         }
 
-        console.log("old path: " + path);
+        //console.log("old path: " + path);
         if (fullConfig.slash_ending_urls && !path.endsWith('/') && !path.endsWith('.html')) {
             path = path + "/";
         } else if (!fullConfig.slash_ending_urls && path.endsWith('/')) {
             path = path.substring(0, path.length - 1);
         }
         // console.log("search: " + url_parts.search);
-        console.log("new path: " + path);
+        //console.log("new path: " + path);
         return path;
     },
     // router: function(req) {
@@ -112,13 +127,14 @@ var options = {
 
 var siteFilter = function (pathname, req) {
     var url_parts = url.parse(req.url, true);
-    var result = pathname.match('^/site/_cmsinternal/external') !== null
+    var result = (pathname.match('^' + fullConfig.br_rel_url) !== null 
+    || pathname.match('^' + fullConfig.br_rel_url) !== null)
         && (url_parts.search === null || url_parts.search.match("^\\?_hn") === null)
     //console.log("pathname: " + pathname + " = "+ result)
     return result;
     //return !pathname.match('^/site/_cmsinternal/webfiles') && req.method === 'GET';
 };
-var live_app = express();
+
 //app.use(morgan('tiny'));
 //app.use(morgan('combined'));
 var siteProxy = proxy(siteFilter, options);
@@ -149,7 +165,8 @@ var cmsFilter = function (pathname, req) {
     var url_parts = url.parse(req.url, true);
     var result =
         (url_parts.search !== null && url_parts.search.match("^\\?_hn") !== null)
-        || pathname.match('^/site/_cmsinternal/external') === null
+        || (pathname.match('^' + fullConfig.br_rel_url) === null 
+        && pathname.match('^' + fullConfig.br_rel_url) === null )
         || pathname.match('^/cms') !== null;
     console.log("CMS filter pathname: " + pathname + " = " + result)
     return result;
@@ -162,7 +179,9 @@ var cmsProxy = proxy(cmsFilter,
             // '^/site/external': 'http://me:3000', // path only
             //'^/on': 'http://me:3000', // path only
         },
-        logLevel: fullConfig.log_level
+        logLevel: fullConfig.log_level,
+        //  secure: true,
+        // followRedirects: false
     });
 
 live_app.use('/cms', cmsProxy);// add the proxy to express
@@ -170,7 +189,6 @@ live_app.use('/site/_cmsinternal', cmsProxy);// add the proxy to express
 live_app.use('/site/_cmsinternal/webfiles', cmsProxy);
 live_app.use('/site/images', cmsProxy);
 live_app.use('/site/_cmssessioncontext', cmsProxy);
-
 
 var rootProxy = proxy(
     {
@@ -185,7 +203,12 @@ fullConfig.root_urls.forEach(url => {
 });
 
 // the context defines the inital part, so nothing before this context can be fetched
-live_app.use(cacheMW, siteProxy); // add the proxy to express  //
-live_app.listen(fullConfig.node_port, () => {
-    console.log("Started server on " + fullConfig.node_port);
+console.log("start: " + fullConfig.br_rel_url)
+live_app.use(fullConfig.br_rel_url, siteProxy); // add the proxy to express  //
+//https.createServer(httpsOpts, live_app).listen(443);
+
+});
+
+live_app.listen(3001, () => {
+    console.log("Started server on " + 3001);
 });

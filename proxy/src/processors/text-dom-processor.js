@@ -39,7 +39,7 @@ exports.transform = async function (config, processorConfig, input, proxyRes, re
                                 if (processorConfig.type === "prepend") {
                                     const prependUrl = utils.getPrependUrl(config, processorConfig)
                                     if(tag.make_url_relative){
-                                        //console.log("before: " + newLink)
+                                       // console.log("before: " + newLink)
                                         newLink = newLink.replace(config.target_url, "");
                                         //console.log("after: " + newLink)
                                     }
