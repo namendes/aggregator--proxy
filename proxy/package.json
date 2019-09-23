@@ -1,0 +1,40 @@
+{
+    "name": "site-proxy",
+    "version": "0.0.1",
+    "scripts": {
+        "loader": "node src/loader.js",
+        "aggregator": "node src/scripts/aggregator.js",
+        "aggregator-preview": "node src/scripts/aggregator-preview.js",
+        "express": "node src/scripts/express.js",
+        "angular": "npm run --prefix ../ng-",
+        "dev": "concurrently --kill-others \"npm run loader\" \"npm run aggregator\" \"npm run --prefix ../ng-app start\"",
+        "dev-proxy": "concurrently --kill-others \"npm run loader\" \"npm run aggregator\""
+    },
+    "dependencies": {
+        "cache-manager": "^2.9.1",
+        "cache-manager-fs-binary": "^1.0.4",
+        "cheerio": "^1.0.0-rc.3",
+        "dotenv": "^8.0.0",
+        "express": "^4.17.1",
+        "fs-extra": "^8.0.1",
+        "http-proxy-middleware": "^0.19.1",
+        "iltorb": "^2.4.3",
+        "install": "^0.12.2",
+        "mime-types": "^2.1.24",
+        "node-fetch": "^2.6.0",
+        "npm": "^6.9.0",
+        "path": "^0.12.7",
+        "puppeteer": "^1.17.0",
+        "puppeteer-extra": "^2.1.3",
+        "request": "^2.88.0",
+        "request-promise": "^4.2.4",
+        "set-cookie-parser": "^2.4.0",
+        "uuid-by-string": "^2.1.5",
+        "winston": "^3.2.1",
+        "zlib": "^1.0.5"
+    },
+    "devDependencies": {
+        "concurrently": "^4.1.0",
+        "morgan": "^1.9.1"
+    }
+}

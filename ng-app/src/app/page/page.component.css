@@ -1,0 +1,74 @@
+.products {
+    padding: 2rem;
+}
+
+/*label, input {
+  display: block;
+}*/
+
+label {
+    margin-bottom: 1rem;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.loading {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.mat-icon-button {
+    width: 25px;
+}
+
+td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type, th.mat-header-cell:last-of-type {
+    padding: 0;
+}
+
+.mat-button-toggle {
+    width: 64px;
+    height: 32px;
+    line-height: 55px;
+}
+
+.larger-input{
+    vertical-align: inherit;
+}
+
+.mat-icon {
+    width: 26px;
+    height: 26px;
+}
+
+.material-icons {
+    font-size: 22px;
+}
+
+.mat-row:nth-child(even){
+    background-color:#f3f2f2;
+    }
+
+.mat-row:nth-child(odd){
+    background-color:white;
+    }
+
+th{
+    background-color: #f1f0f0;
+    border: 2px;
+    border-bottom-style: solid ;
+    color:#333;
+    font-size: 1em
+}
+
+td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type, th.mat-header-cell:first-of-type {
+    padding-left: 5px;
+    width: 150px;
+    text-align: inherit;
+}

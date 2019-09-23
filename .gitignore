@@ -1,0 +1,17 @@
+*.iml
+/.hippo
+.idea/
+frontend-redesign/assets/dist
+**/node_modules
+frontend-redesign/prototype/dist
+cms/overlays
+site/overlays
+essentials/overlays/**
+**/target
+/cms/target/
+/site/target/
+/essentials/target/
+/repository-data/webfiles/target/
+/repository-data/development/target/
+/repository-data/application/target/
+storage/

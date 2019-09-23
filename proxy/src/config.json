@@ -1,0 +1,516 @@
+{
+    "general": {
+        "prepend": "/site/external"
+    },
+    "site_origin": {
+        "config_id": "static_site",
+        "site_desc": "Scrapped site - Bloomreach.com",
+        "node_port": 5000,
+        "root_folder": "public",
+        "scrapper_options": {
+            "directory": "public",
+            "clean_destination_folder": false,
+            "urls": [
+                "https://demo.vuestorefront.io"
+            ],
+            "headless": false,
+            "recursive": true,
+            "concorrent_runners": 2,
+            "max_hiperlink_depth": 1,
+            "max_assets_depth": 3,
+            "ignoreErrors": true
+        },
+        "processors": [
+            "file-dom_hyperlink-anchor-processor",
+            "file-dom_hyperlink-assets-processor",
+            "file-dom-regex-processor",
+            "file-css-regex-processor"
+        ]
+    },
+    "proxy": {
+        "common": {
+            "target_url": "https://www.etos.nl",
+            "br_base_url": "http://local:8080",
+            "service_url": "http://local:8080/site/rest/page/url",
+            "host": "local",
+            "br_mount_alias": "external",
+            "br_mount_path": "/external",
+            "site_root_path": "",
+            "slash_ending_urls": true,
+            "root_urls":[
+                "/on"
+            ],
+            "br_static_container": {
+                "uuid": "00000000-0000-0000-0000-000000000000",
+                "containers": [
+                    {
+                        "name": "main",
+                        "selector": "#content",
+                        "mode": "inside"
+                    }
+                ]
+            },
+            "br_hybrid_container": {
+                "uuid": "00000000-0000-0000-0000-000000000000",
+                "containers": [
+                    {
+                        "name": "main",
+                        "selector": "#content",
+                        "mode": "top"
+                    }
+                ]
+            }
+        },
+        "live": {
+            "config_id": "liveSite",
+            "node_port": 3000,
+            "log_level": "debug",
+            "br_site_url": "http://local:8080/site",
+            "br_rel_url": "/site/external",
+            "prepend": "/site",
+            "processors": [
+                "text-dom-hyperlink-anchor-processor",
+                "text-aggregator-processor"
+            ]
+        },
+        "preview": {
+            "config_id": "previewSite",
+            "node_port": 3001,
+            "log_level": "error",
+            "br_site_url": "http://local:8080/site/_cmsinternal",
+            "br_rel_url": "/site/_cmsinternal/external",
+            "prepend": "/site/_cmsinternal",
+            "processors": [
+                "text-dom-hyperlink-anchor-processor",
+                "text-aggregator-processor"
+            ]
+        }
+    },
+    "processors": [
+        {
+            "name": "text-aggregator-processor",
+            "script": "text-aggregator-processor.js",
+            "included_content_types": [
+                "text/html"
+            ],
+            "excluded_extensions_files": [
+                "js",
+                "css",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif",
+                "ico",
+                "map"
+            ],
+            "header_conditions": [
+                {
+                    "name": "x-requested-with",
+                    "regex": "^(?![\\s\\S])"
+                }
+            ]
+        },
+        {
+            "name": "text-dom-hyperlink-anchor-processor",
+            "script": "text-dom-processor.js",
+            "type": "prepend",
+            "strip_site_root": true,
+            "included_content_types": [
+                "text/html"
+            ],
+            "excluded_extensions_files": [
+                "js",
+                "css",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "tags": [
+                {
+                    "name": "a",
+                    "attributes": [
+                        "href"
+                    ],
+                    "make_url_relative": false,
+                    "exclude_expression": "^http|^\/\/|^#|^javascript|^mailto"
+                }
+            ]
+        },
+        {
+            "name": "text-dom-relative-hyperlink-processor",
+            "script": "text-dom-processor.js",
+            "type": "remove",
+            "remove": "https://www.etc.com",
+            "included_content_types": [
+                "text/html"
+            ],
+            "excluded_extensions_files": [
+                "js",
+                "css",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "tags": [
+                {
+                    "name": "a",
+                    "attributes": [
+                        "href"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "text-dom-hyperlink-assets-processor",
+            "script": "text-dom-processor.js",
+            "type": "prepend",
+            "prepend": "/site",
+            "included_content_types": [
+                "text/html"
+            ],
+            "excluded_extensions_files": [
+                "js",
+                "css",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "tags": [
+                {
+                    "name": "link",
+                    "attributes": [
+                        "href"
+                    ],
+                    "exclude_expression": "^http|^\/\/|^#"
+                },
+                {
+                    "name": "script",
+                    "attributes": [
+                        "src"
+                    ],
+                    "exclude_expression": "^http|^\/\/|^#"
+                },
+                {
+                    "name": "img",
+                    "attributes": [
+                        "src",
+                        "srcset"
+                    ],
+                    "exclude_expression": "^http|^\/\/|^#"
+                },
+                {
+                    "name": "use",
+                    "attributes": [
+                        "xlink:href",
+                        "href"
+                    ],
+                    "exclude_expression": "^http|^\/\/|^#"
+                }
+            ]
+        },
+        {
+            "name": "text-dom-regex-processor",
+            "script": "text-regex-processor.js",
+            "included_content_types": [
+                "text/html"
+            ],
+            "included_extensions_files": [
+                "html",
+                "htm"
+            ],
+            "excluded_extensions_files": [
+                "css",
+                "js",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "regex_replacement": [
+                {
+                    "regex": "url\\((?!['\"]?(?:data:|https?:|\/\/|\\.\\.\/))(['\"]?)([^'\")]*)\\1\\)",
+                    "group": 2
+                }
+            ]
+        },
+        {
+            "name": "text-dom-JS-regex-processor",
+            "script": "text-regex-processor.js",
+            "included_content_types": [
+                "text/html"
+            ],
+            "included_extensions_files": [
+                "html",
+                "htm"
+            ],
+            "excluded_extensions_files": [
+                "css",
+                "js",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "regex_replacement": [
+                {
+                    "regex": "\"\/us\/shop\"",
+                    "group": 1
+                }
+            ]
+        },
+        {
+            "name": "text-css-regex-processor",
+            "script": "text-regex-processor.js",
+            "prepend": "/site",
+            "included_content_types": [
+                "text/css"
+            ],
+            "included_extensions_files": [
+                "css"
+            ],
+            "excluded_extensions_files": [
+                "html",
+                "htm",
+                "js",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "regex_replacement": [
+                {
+                    "regex": "url\\((?!['\"]?(?:data:|https?:|\/\/|\\.\\.\/))(['\"]?)([^'\")]*)\\1\\)",
+                    "group": 2
+                }
+            ]
+        },
+        {
+            "name": "text-script-remove-regex-processor",
+            "script": "text-regex-processor.js",
+            "included_content_types": [
+                "text/html"
+            ],
+            "included_extensions_files": [
+                "html",
+                "htm"
+            ],
+            "excluded_extensions_files": [
+                "js",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif",
+                "css"
+            ],
+            "regex_remove": [
+                {
+                    "regex": "(?!(<!-- Salesforce Snippet E -CK -->)\\r*\\n*\\t* *)(<script\\b[^>]*>([\\s\\S]*?)<\\/script>)(?=\\r*\\n*\\t* *<!-- Snap Pixel Code E -->)",
+                    "group": 0
+                }
+            ]
+        },
+        {
+            "name": "text-script-relativelinks-regex-processor",
+            "script": "text-regex-processor.js",
+            "included_content_types": [
+                "text/html"
+            ],
+            "included_extensions_files": [
+                "html",
+                "htm"
+            ],
+            "excluded_extensions_files": [
+                "js",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif",
+                "css"
+            ],
+            "regex_remove": [
+                {
+                    "regex": "https://www.etc.com",
+                    "group": 0
+                }
+            ]
+        },
+        {
+            "name": "file-dom-hyperlink-anchor-processor",
+            "script": "file-dom-processor.js",
+            "prepend": "/site/external",
+            "included_content_types": [
+                "text/html"
+            ],
+            "excluded_extensions_files": [
+                "js",
+                "css",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "tags": [
+                {
+                    "name": "a",
+                    "attributes": [
+                        "href"
+                    ],
+                    "exclude_expression": "^http|^\/\/|^#|^javascript"
+                }
+            ]
+        },
+        {
+            "name": "file-dom-hyperlink-assets-processor",
+            "script": "file-dom-processor.js",
+            "included_content_types": [
+                "text/html"
+            ],
+            "excluded_extensions_files": [
+                "js",
+                "css",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "tags": [
+                {
+                    "name": "link",
+                    "attributes": [
+                        "href"
+                    ],
+                    "exclude_expression": "^http|^\/\/|^#"
+                },
+                {
+                    "name": "script",
+                    "attributes": [
+                        "src"
+                    ],
+                    "exclude_expression": "^http|^\/\/|^#"
+                },
+                {
+                    "name": "img",
+                    "attributes": [
+                        "src",
+                        "srcset"
+                    ],
+                    "exclude_expression": "^http|^\/\/|^#"
+                },
+                {
+                    "name": "use",
+                    "attributes": [
+                        "xlink:href",
+                        "href"
+                    ],
+                    "exclude_expression": "^http|^\/\/|^#"
+                }
+            ]
+        },
+        {
+            "name": "file-dom-regex-processor",
+            "script": "file-regex-processor.js",
+            "included_content_types": [
+                "text/html"
+            ],
+            "included_extensions_files": [
+                "html",
+                "htm"
+            ],
+            "excluded_extensions_files": [
+                "css",
+                "js",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "regex_replacement": [
+                {
+                    "regex": "url\\((?!['\"]?(?:data:|https?:|\/\/|\\.\\.\/))(['\"]?)([^'\")]*)\\1\\)",
+                    "group": 2
+                }
+            ]
+        },
+        {
+            "name": "file-dom-JS-regex-processor",
+            "script": "file-regex-processor.js",
+            "included_content_types": [
+                "text/html"
+            ],
+            "included_extensions_files": [
+                "html",
+                "htm"
+            ],
+            "excluded_extensions_files": [
+                "css",
+                "js",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "regex_replacement": [
+                {
+                    "regex": "\"\/us\/shop\"",
+                    "group": 1
+                }
+            ]
+        },
+        {
+            "name": "file-css-regex-processor",
+            "script": "file-regex-processor.js",
+            "included_content_types": [
+                "text/css"
+            ],
+            "included_extensions_files": [
+                "css"
+            ],
+            "excluded_extensions_files": [
+                "html",
+                "htm",
+                "js",
+                "ttf",
+                "woff",
+                "svg",
+                "png",
+                "jpg",
+                "gif"
+            ],
+            "regex_replacement": [
+                {
+                    "regex": "url\\((?!['\"]?(?:data:|https?:|\/\/|\\.\\.\/))(['\"]?)([^'\")]*)\\1\\)",
+                    "group": 2
+                }
+            ]
+        }
+    ]
+}
