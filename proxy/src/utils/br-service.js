@@ -93,7 +93,9 @@ exports.retrievePageComment = async function (config, path, cookies) {
 
     var result = await retrieveText(url, cookies);
     if (result !== null) {
-        var markup = await result.text;
+
+        try {
+            var markup = await result.text;
 
         if (markup !== null && markup !== undefined) {
             //console.log(markup)
@@ -105,6 +107,9 @@ exports.retrievePageComment = async function (config, path, cookies) {
                 headContributions: headContributions
             }
             return result;
+        }
+        } catch (error) {
+         console.log("unable to retrieve text from page markup");   
         }
     }
     return null;
