@@ -30,20 +30,25 @@ export class PageService {
   }
 
 
-  getPage(id: string) {
-    console.log("id"+ id);
-    return this.request('get', `${baseUrl}/page/id/${id}`);
+  getPage(url:string, mount:string) {
+    //console.log('updateContainer ' + JSON.stringify(container));
+    const payload = new HttpParams()
+      .set('url', url)
+      .set('mount', mount);
+    return this.request('post', `${baseUrl}/page/url`, payload);
   }
 
- /* addContainer(container: Container) {
+  /* addContainer(container: Container) {
     //console.log('createProduct ' + JSON.stringify(container));
     return this.request('post', `${baseUrl}/page/add/${id}`, container);
   }*/
 
-  updateContainer(id:string, container: Container) {
+  updateContainer(id:string,path:string, mount:string, container: Container) {
     console.log('updateContainer ' + JSON.stringify(container));
     const payload = new HttpParams()
-      .set('name', container.name)
+    .set('path', path)
+    .set('mount', mount)
+    .set('name', container.name)
       .set('selector', container.selector)
       .set('mode', container.mode);
     return this.request('post', `${baseUrl}/page/id/${id}`, payload);

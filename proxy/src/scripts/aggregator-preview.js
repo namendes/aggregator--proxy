@@ -63,10 +63,8 @@ const onProxyRes = function (proxyRes, req, res) {
         //console.log( "transformed body" + await textProcessor.transform(appConfig, config, body, proxyRes, req, res));
         //console.log(body)
         res.setHeader('content-length', result.data.length);
-        
-        console.log("location: " + res.getHeader('location'));
+        //console.log("location: " + res.getHeader('location'));
         //res.removeHeader('location');
-
         res.removeHeader('link');
         //to check
         if (result.encoding) {
@@ -127,7 +125,7 @@ var options = {
 
 var siteFilter = function (pathname, req) {
     var url_parts = url.parse(req.url, true);
-    var result = (pathname.match('^' + fullConfig.br_rel_url) !== null 
+    var result = (pathname.match('^' + fullConfig.br_rel_url) !== null
     || pathname.match('^' + fullConfig.br_rel_url) !== null)
         && (url_parts.search === null || url_parts.search.match("^\\?_hn") === null)
     //console.log("pathname: " + pathname + " = "+ result)
@@ -135,10 +133,7 @@ var siteFilter = function (pathname, req) {
     //return !pathname.match('^/site/_cmsinternal/webfiles') && req.method === 'GET';
 };
 
-//app.use(morgan('tiny'));
-//app.use(morgan('combined'));
-var siteProxy = proxy(siteFilter, options);
-var cacheMW = cache.cacheMiddleware();
+
 
 // var redirect = function (req, res, next) {
 //     // Don't allow user to hit Heroku now that we have a domain
@@ -165,7 +160,7 @@ var cmsFilter = function (pathname, req) {
     var url_parts = url.parse(req.url, true);
     var result =
         (url_parts.search !== null && url_parts.search.match("^\\?_hn") !== null)
-        || (pathname.match('^' + fullConfig.br_rel_url) === null 
+        || (pathname.match('^' + fullConfig.br_rel_url) === null
         && pathname.match('^' + fullConfig.br_rel_url) === null )
         || pathname.match('^/cms') !== null;
     console.log("CMS filter pathname: " + pathname + " = " + result)
@@ -197,14 +192,19 @@ var rootProxy = proxy(
         changeOrigin: true,
         logLevel: fullConfig.log_level
     });
- 
+
 fullConfig.root_urls.forEach(url => {
     live_app.use(url, rootProxy);
 });
 
+//app.use(morgan('tiny'));
+//app.use(morgan('combined'));
+var siteProxy = proxy(siteFilter, options);
+var cacheMW = cache.cacheMiddleware();
+
 // the context defines the inital part, so nothing before this context can be fetched
 console.log("start: " + fullConfig.br_rel_url)
-live_app.use(fullConfig.br_rel_url, siteProxy); // add the proxy to express  //
+live_app.use(fullConfig.br_rel_url,cacheMW, siteProxy); // add the proxy to express  //
 //https.createServer(httpsOpts, live_app).listen(443);
 
 });

@@ -38,24 +38,15 @@
             "site_root_path": "",
             "slash_ending_urls": true,
             "root_urls":[
+                "/on"
             ],
             "br_static_container": {
                 "uuid": "00000000-0000-0000-0000-000000000000",
                 "containers": [
                     {
                         "name": "main",
-                        "selector": "#content",
+                        "selector": "body > main",
                         "mode": "inside"
-                    }
-                ]
-            },
-            "br_hybrid_container": {
-                "uuid": "00000000-0000-0000-0000-000000000000",
-                "containers": [
-                    {
-                        "name": "main",
-                        "selector": "#content",
-                        "mode": "top"
                     }
                 ]
             }
@@ -98,7 +89,7 @@
             "site_root_path": "",
             "slash_ending_urls": true,
             "root_urls":[
-                "/on"
+               
             ],
             "br_static_container": {
                 "uuid": "00000000-0000-0000-0000-000000000000",

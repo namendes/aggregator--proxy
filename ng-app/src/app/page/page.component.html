@@ -32,23 +32,23 @@
       </td>
     </ng-container>
 
-    <ng-container matColumnDef="selector">
+    <ng-container matColumnDef="selector" >
       <th mat-header-cell *matHeaderCellDef><span style="padding-left: 85px">Selector</span></th>
       <td mat-cell *matCellDef="let container">
         <textarea type="text" rows="2" cols="40"  class="larger-input" [(ngModel)]="container.selector">
       </textarea>
 
-        <mat-button-toggle-group #mode="matButtonToggleGroup" [(ngModel)]="container.mode" ng-init="container.mode = container.mode || 'top'" style="vertical-align: middle;">
-            <mat-button-toggle class="small" value="top" aria-label="Text align left">
+        <mat-button-toggle-group #mode="matButtonToggleGroup" [(ngModel)]="container.mode" ng-init="container.mode = container.mode || 'top'" style="vertical-align: middle;" >
+            <mat-button-toggle class="small" value="top" aria-label="Place container on top">
               <mat-icon style="line-height: 0px;">border_top</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle class="small" value="bottom" aria-label="Text align center">
+            <mat-button-toggle class="small" value="bottom" aria-label="Place container at bottom">
               <mat-icon style="line-height: 0px;">border_bottom</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle class="small" value="inside" aria-label="Text align justify">
+            <mat-button-toggle class="small" value="inside" aria-label="Place container inside" >
               <mat-icon style="line-height: 0px;">select_all</mat-icon>
             </mat-button-toggle>
-            <mat-button-toggle class="small" value="replace" aria-label="Text align right">
+            <mat-button-toggle class="small" value="replace" aria-label="Raplace with container">
               <mat-icon style="line-height: 0px;">crop_square</mat-icon>
             </mat-button-toggle>
           </mat-button-toggle-group>
@@ -69,7 +69,7 @@
     <ng-container matColumnDef="delete">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let container">
-        <button mat-icon-button (click)="deleteContainer(container)">
+        <button mat-icon-button (click)="deleteContainer(container)" [disabled]="container.type === 'STATIC'">
           <mat-icon>delete</mat-icon>
         </button>
       </td>

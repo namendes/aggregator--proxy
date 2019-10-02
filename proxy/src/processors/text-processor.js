@@ -8,8 +8,6 @@ exports.transform = async function (appConfig, config, body, proxyRes, req, res)
     const processors = config.processors;
     var encoding = proxyRes.headers['content-encoding']
     
-
-
     let data = {
         data: body,
         encoding:encoding

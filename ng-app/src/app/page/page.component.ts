@@ -17,6 +17,8 @@ export class PageComponent implements OnInit {
 
   newContainer = undefined;
   pageId = "1";
+  path = "";
+  mount = "";
   loading = false;
   page: Page= new Page();
 
@@ -59,7 +61,10 @@ export class PageComponent implements OnInit {
           res => {
           //  this.ui = res;
             // Success
+           // console.log(res)
             this.pageId = res.id;
+            this.path = res.path;
+            this.mount = res.channel.mountPath.substr(1);
             this.refresh();
             resolve();
           },
@@ -96,7 +101,7 @@ export class PageComponent implements OnInit {
 
   async refresh() {
     this.loading = true;
-    this.page = await this.pageService.getPage(this.pageId);
+    this.page = await this.pageService.getPage(this.path, this.mount);
 
     this.dataSource.data = this.page.containers;
     this.loading = false;
@@ -120,7 +125,8 @@ export class PageComponent implements OnInit {
 
   async updateContainerName(container:Container) {
     this.loading = true;
-    await this.pageService.updateContainer(this.pageId,container);
+    //console.log("path: " + this.path + " mount: " + this.mount)
+    await this.pageService.updateContainer(this.pageId,this.path, this.mount, container);
     await this.refresh();
      this.refreshPage();
   }
@@ -129,7 +135,7 @@ export class PageComponent implements OnInit {
     this.loading = true;
     let item = new Container(this.newContainer,"", "top");
 
-    await this.pageService.updateContainer(this.pageId,item);
+    await this.pageService.updateContainer(this.pageId,this.path, this.mount, item);
     //this.page.containers.push(item);
 
     this.newContainer = undefined;

@@ -33,7 +33,7 @@ exports.transform = async function (config, processorConfig, input, proxyRes, re
         //accepted extension
         if (!processorConfig.excluded_extensions_files.includes(extension)) {
             if (utils.checkHeaderConditions(req.headers, processorConfig.header_conditions)) {
-               // console.log(contentType + " - " + encoding + " extension " + extension + " url: " + req.url)
+                // console.log(contentType + " - " + encoding + " extension " + extension + " url: " + req.url)
                 var output = utils.uncompress(input.data, input.encoding); // some function to manipulate body
                 //console.log(output.toString('utf8'))
                 var $ = cheerio.load(output)
@@ -43,28 +43,33 @@ exports.transform = async function (config, processorConfig, input, proxyRes, re
                 //console.log( pageDefinition)
                 if (pageDefinition != null) {
 
-                     //console.log(req.url +"  -- " + contentType)
-                  // var page = JSON.parse(pageDefinition);
+                    //console.log(req.url +"  -- " + contentType)
+                    // var page = JSON.parse(pageDefinition);
 
                     const start = async () => {
                         await utils.asyncForEach(pageDefinition.containers, async (container) => {
                             var markup = "";
                             // console.log(statusCode )
-                             console.log(container )
-
-                            if(container.type === "STATIC"){
+                            
+                            if (container.type === "STATIC") {
                                 container = config.br_static_container.containers[0];
-                            }else if(container.type === "HYBRID"){
-                                container = config.br_hybrid_container.containers[0];
-                            }
+                             }
+                            // else if (container.type === "HYBRID") {
+                            //     container = config.br_hybrid_container.containers[0];
+                            // }
+                            console.log(container)
+
                             //fallback for a srouce site 404 (might be a Bloomreach page only)
                             if (statusCode >= 400 && statusCode < 500) {
                                 var result = await service.getContainerMarkup(config, relUrl, url_parts.search, container, allCookies);
-                                markup = await result.text;
-                                setCookie = result.setCookies;
-                               // console.log("statuscode: " + statusCode + "markup: " + markup)
-                                if(markup !== null){
-                                    res.status(200);
+                                if (result != null) {
+                                    markup = await result.text;
+                                    setCookie = result.setCookies;
+
+                                    // console.log("statuscode: " + statusCode + "markup: " + markup)
+                                    if (markup !== null) {
+                                        res.status(200);
+                                    }
                                 }
                             } else {
                                 var result = await service.getContainerMarkup(config, relUrl, url_parts.search, container, allCookies);
@@ -77,7 +82,7 @@ exports.transform = async function (config, processorConfig, input, proxyRes, re
                             //console.log("URL: " + relUrl +  " MARKUP: " + markup);
                             // TODO add alternative to replace inside
                             //markup = "<div>gello</div>";
-                          //  console.log(container.selector + " - " + $(container.selector).attr('class'))
+                            //  console.log(container.selector + " - " + $(container.selector).attr('class'))
 
                             if (container.mode === 'replace') {
                                 //console.log(container.selector);
@@ -96,21 +101,21 @@ exports.transform = async function (config, processorConfig, input, proxyRes, re
                             }
                             // $(container.selector).remove();
                             //  await replaceContainer(container);
-                           // console.log(container);
+                            // console.log(container);
                         })
                     }
                     await start();
                 }
 
                 var pageInstructions = await service.retrievePageComment(config, relUrl, allCookies);
-                 //console.log(pageInstructions)
+                //console.log(pageInstructions)
                 if (pageInstructions != null && pageInstructions.headContributions != null) {
                     $('head').append(pageInstructions.headContributions);
                 }
                 output = $.html();
 
                 if (pageInstructions != null && pageInstructions.pageComment != null) {
-                   // console.log("pageInstructions.pageComment: "+ pageInstructions.pageComment)
+                    // console.log("pageInstructions.pageComment: "+ pageInstructions.pageComment)
                     // adding global page comment
                     input.data = output + pageInstructions.pageComment;
                 }
